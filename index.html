@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ABM de Personas - Segundo Parcial</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header class="header_container">
+        <h1 class="header_title">Segundo Parcial Laboratorio III 2024</h1>
+    </header>
+
+    <section class="container">
+        <div class="listadoPersonas">
+            <h2>Listado de Personas</h2>
+
+            <!-- Tabla -->
+            <table id="tablaPersonas" class="tablaBody">
+                <thead>
+                    <tr>
+                        <th id="click_tablaID" class="tablaID">ID</th>
+                        <th id="click_tablaNombre" class="tablaNombre">Nombre</th>
+                        <th id="click_tablaApellido" class="tablaApellido">Apellido</th>
+                        <th id="click_tablaFechaNacimiento" class="tablaFechaNacimiento">Fecha de Nacimiento</th>
+                        <th id="click_tablaDNI" class="tablaDNI">DNI</th>
+                        <th id="click_tablaPaisOrigen" class="tablaPaisOrigen">País de Origen</th>
+                        <th class="tablaModificar">Modificar</th>
+                        <th class="tablaEliminar">Eliminar</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Completada por JS -->
+                </tbody>
+            </table>
+
+            <!-- Footer de botones para la tabla -->
+            <div class="tabla_footer">
+                <button id="agregarBtn">Agregar elemento</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contenedor del spinner con el formulario ABM -->
+    <div class="spinner-container" id="spinner-container" style="display:none;">
+        <div class="spinner"></div>
+    </div>
+
+    <!-- Formulario ABM -->
+    <div id="formularioABM" class="formularioABM" style="display:none;">
+        <h1 id="tituloFormulario">Agregar Persona</h1>
+        <form id="formularioABMForm">
+
+            <div class="campo">
+                <label>Nombre:</label>
+                <input type="text" id="nombre" required>
+            </div>
+            <div class="campo">
+                <label>Apellido:</label>
+                <input type="text" id="apellido" required>
+            </div>
+            <div class="campo">
+                <label>Fecha de Nacimiento:</label>
+                <input type="text" id="fechaNacimiento" placeholder="AAAAMMDD" required>
+            </div>
+            <div class="campo">
+                <label>Tipo de Persona:</label>
+                <select id="tipoPersona" required>
+                    <option value="">Seleccione</option>
+                    <option value="ciudadano">Ciudadano</option>
+                    <option value="extranjero">Extranjero</option>
+                </select>
+            </div>
+            <div class="campo" id="campoDNI" style="display:none;">
+                <label>DNI:</label>
+                <input type="number" id="dni">
+            </div>
+            <div class="campo" id="campoPaisOrigen" style="display:none;">
+                <label>País de Origen:</label>
+                <input type="text" id="paisOrigen">
+            </div>
+            <div class="abm_botones">
+                <button type="submit" class="aceptar">Aceptar</button>
+                <button type="button" class="cancelar" onclick="cancelarAccion()">Cancelar</button>
+            </div>
+        </form>
+    </div>
+
+    <script src="loadData.js"></script>
+    <script src="definicionClases.js"></script>
+    <script src="validaciones.js"></script>
+    <script src="main.js"></script>
+</body>
+</html>

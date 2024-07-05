@@ -1,0 +1,137 @@
+
+.header_container{
+    text-align: center;
+    font-size: 40px;
+    color: red;
+    padding: 40px;
+    
+}
+
+
+body{
+    background-color: black;
+    color: white;
+}
+
+/*TABLA DE DATOS*/
+.listadoPersonas {
+    border: 2px solid white;
+    padding: 10px;
+    border-radius: 20px; 
+}
+
+.filtrosTabla, .calcular{
+    padding: 5px;
+}
+.tabla_checkbox{
+    padding: 10px;
+}
+.tablaBody {
+    border-collapse: collapse;
+    border: 2px solid white;
+    width: 100%; 
+}
+.tablaBody th, .tablaBody td {
+    border: 1px solid white;
+    padding: 8px;
+    text-align: center;
+    max-width: 150px;
+    overflow: hidden;
+}
+.tablaBody th{
+    color: blue;
+    background-color: grey;
+}
+
+.tabla_footer{
+    display: flex;
+    justify-content: center;
+    margin: 20px;
+    
+}
+
+/*FORMULARIO AMB*/
+.container {
+    
+    display: flex;
+    justify-content: center;
+      
+    
+}
+
+.formularioABM {
+    position: fixed;
+    border: 2px solid white;
+    padding: 20px;
+    width: 300px;
+    margin-top: 120px;    
+    border-radius: 20px; 
+     
+    
+}
+
+.formularioABM .campo {
+    margin-bottom: 10px;
+}
+
+.formularioABM .campo label {
+    display: inline-block;
+    width: 100px;
+    text-align: left;
+}
+
+
+.id_1{
+    display: inline-block; 
+    width: 200px;
+    height: 20px; 
+    line-height: 30px; 
+    text-align: center; 
+    border: 1px solid white; 
+}
+
+
+button {
+    border-radius: 5px;
+    height: 35px; 
+    background-color: grey;
+    color: white;
+    font-size: 14px;
+}
+.formularioABM {
+   
+    background: black; 
+    padding: 20px;
+    border: 1px solid #ccc;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    z-index: 10000;
+    color: white;
+}
+
+.abm_botones{
+    margin-top: 25px;
+    display: flex;
+    justify-content: center;
+}
+
+
+/* SPINNER */
+/* Estilos para el contenedor del spinner */
+.spinner-container {
+    display: none; /* Oculto por defecto */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5); /* Fondo negro semi-transparente */
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    pointer-events: none; /* No interferir cuando está oculto */
+}
+
+.spinner-container.active {
+    display: flex;
+    pointer-events: all; /* Permitir interacción cuando está visible */
+}
