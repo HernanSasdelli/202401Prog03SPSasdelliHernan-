@@ -6,11 +6,13 @@ document.addEventListener('DOMContentLoaded', function() {
     var campoPaisOrigen = document.getElementById('campoPaisOrigen');
 
     if (agregarBtn && formularioABMForm && tipoPersonaSelect) {
-        agregarBtn.addEventListener('click', mostrarFormularioABM);
-        formularioABMForm.addEventListener('submit', agregarElemento);
+        agregarBtn.addEventListener('click', function() {
+            mostrarFormularioABM();
+            formularioABMForm.onsubmit = agregarElemento;
+        });
         tipoPersonaSelect.addEventListener('change', mostrarCamposSegunTipoPersona);
     } else {
-        console.error('No se encontró el botón agregar, el formulario ABM o el selector de tipo de persona.');
+        console.error('404');
     }
 
     cargarDatosDesdeAPI();
@@ -34,6 +36,67 @@ function mostrarCamposSegunTipoPersona() {
         document.getElementById('dni').required = false;
         document.getElementById('paisOrigen').required = false;
     }
+}
+
+function limpiarFormularioABM() {
+    document.getElementById('persona-id').innerText = ''; // Limpiar el campo de ID
+    document.getElementById('nombre').value = '';
+    document.getElementById('apellido').value = '';
+    document.getElementById('fechaNacimiento').value = '';
+    document.getElementById('dni').value = '';
+    document.getElementById('paisOrigen').value = '';
+    document.getElementById('tipoPersona').value = '';
+    document.getElementById('tipoPersona').disabled = false;
+    document.getElementById('dni').disabled = false;
+    document.getElementById('paisOrigen').disabled = false;
+    mostrarCamposSegunTipoPersona(); // Reset fields display based on type selection
+}
+
+function mostrarFormularioABM() {
+    limpiarFormularioABM();
+    document.querySelector('.listadoPersonas').style.display = 'none';
+    document.getElementById('formularioABM').style.display = 'block';
+    document.getElementById('tituloFormulario').innerText = 'Agregar Persona'; // Por defecto, 'Agregar Persona'
+    document.getElementById('tipoPersona').disabled = false; // Habilitar por defecto
+}
+
+function ocultarFormularioABM() {
+    document.getElementById('formularioABM').style.display = 'none';
+    document.querySelector('.listadoPersonas').style.display = 'block';
+}
+
+function cancelarAccion() {
+    ocultarFormularioABM();
+}
+
+function mostrarSpinner() {
+    document.getElementById('spinner-container').style.display = 'block';
+}
+
+function ocultarSpinner() {
+    document.getElementById('spinner-container').style.display = 'none';
+}
+
+function mostrarFormularioYLista(lista) {
+    var tableBody = document.querySelector('#tablaPersonas tbody');
+    tableBody.innerHTML = '';
+
+    lista.forEach(persona => {
+        var row = document.createElement('tr');
+        
+        row.innerHTML = `
+            <td>${persona.id}</td>
+            <td>${persona.nombre}</td>
+            <td>${persona.apellido}</td>
+            <td>${persona.fechaNacimiento}</td>
+            ${persona.dni ? `<td>${persona.dni}</td>` : `<td>-</td>`}
+            ${persona.paisOrigen ? `<td>${persona.paisOrigen}</td>` : `<td>-</td>`}
+            <td><button onclick="modificarPersona(${persona.id})">Modificar</button></td>
+            <td><button onclick="eliminarPersona(${persona.id})">Eliminar</button></td>
+        `;
+        
+        tableBody.appendChild(row);
+    });
 }
 
 async function agregarElemento(event) {
@@ -89,49 +152,171 @@ async function agregarElemento(event) {
     }
 }
 
-function mostrarFormularioABM() {
+function modificarPersona(id) {
+    var persona = personas.find(p => p.id === id);
+    if (!persona) {
+        alert('No se encontró la persona.');
+        return;
+    }
+
+    limpiarFormularioABM(); // Limpiar los campos antes de mostrar el formulario
+    document.getElementById('tituloFormulario').innerText = 'Modificar Persona';
+    
+    // Cargar datos en el formulario
+    document.getElementById('nombre').value = persona.nombre;
+    document.getElementById('apellido').value = persona.apellido;
+    document.getElementById('fechaNacimiento').value = persona.fechaNacimiento;
+    document.getElementById('tipoPersona').value = persona.dni ? 'ciudadano' : 'extranjero';
+    document.getElementById('tipoPersona').disabled = true;
+
+    if (persona.dni) {
+        document.getElementById('dni').value = persona.dni;
+        document.getElementById('campoDNI').style.display = 'block';
+        document.getElementById('campoPaisOrigen').style.display = 'none';
+        document.getElementById('dni').disabled = true; // Bloquear DNI
+    } else {
+        document.getElementById('paisOrigen').value = persona.paisOrigen;
+        document.getElementById('campoDNI').style.display = 'none';
+        document.getElementById('campoPaisOrigen').style.display = 'block';
+        document.getElementById('paisOrigen').disabled = true; // Bloquear País de Origen
+    }
+
+    // Bloquear ID
+    document.getElementById('persona-id').innerText = persona.id;
+    formularioABMForm.onsubmit = actualizarElemento;
     document.querySelector('.listadoPersonas').style.display = 'none';
     document.getElementById('formularioABM').style.display = 'block';
-    document.getElementById('tipoPersona').value = '';
-    mostrarCamposSegunTipoPersona();
-    limpiarFormularioABM()
 }
 
-function ocultarFormularioABM() {
-    document.getElementById('formularioABM').style.display = 'none';
-    document.querySelector('.listadoPersonas').style.display = 'block';
+async function actualizarElemento(event) {
+    event.preventDefault();
+    mostrarSpinner();
+
+    const id = document.getElementById('persona-id').innerText;
+    const tipoPersona = document.getElementById('tipoPersona').value;
+    const nombre = document.getElementById('nombre').value;
+    const apellido = document.getElementById('apellido').value;
+    const fechaNacimiento = document.getElementById('fechaNacimiento').value;
+    const dni = document.getElementById('dni').value;
+    const paisOrigen = document.getElementById('paisOrigen').value;
+
+    try {
+        validarNombre(nombre);
+        validarApellido(apellido);
+        validarFechaNacimiento(fechaNacimiento);
+
+        let elementoActualizado = { id, nombre, apellido, fechaNacimiento };
+
+        if (tipoPersona === 'ciudadano') {
+            validarDNI(dni);
+            elementoActualizado.dni = parseInt(dni, 10);
+        } else if (tipoPersona === 'extranjero') {
+            validarPaisOrigen(paisOrigen);
+            elementoActualizado.paisOrigen = paisOrigen;
+        } else {
+            throw new Error("Debe seleccionar un tipo de persona válido.");
+        }
+
+        const response = await fetch('https://examenesutn.vercel.app/api/PersonaCiudadanoExtranjero', {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(elementoActualizado)
+        });
+
+        if (response.status === 200) {
+            // Manejar respuesta de texto plano
+            const data = await response.text();
+            if (data === 'Registro Actualizado') {
+                // Actualizar el elemento en la lista local
+                let index = personas.findIndex(p => p.id === parseInt(id, 10));
+                if (index !== -1) {
+                    personas[index] = elementoActualizado;
+                }
+                mostrarFormularioYLista(personas);
+                ocultarSpinner();
+                ocultarFormularioABM();
+            } else {
+                throw new Error("Respuesta inesperada del servidor.");
+            }
+        } else {
+            ocultarSpinner();
+            alert("No se pudo realizar la operación.");
+        }
+    } catch (error) {
+        ocultarSpinner();
+        alert(error.message);
+    }
+}
+/*ELIMINACION*/
+
+function eliminarPersona(id) {
+    var persona = personas.find(p => p.id === id);
+    if (!persona) {
+        alert('No se encontró la persona.');
+        return;
+    }
+
+    // Cargar datos en el formulario para mostrar antes de eliminar
+    document.getElementById('tituloFormulario').innerText = 'Eliminar Persona';
+    document.getElementById('persona-id').innerText = persona.id;
+    document.getElementById('nombre').value = persona.nombre;
+    document.getElementById('apellido').value = persona.apellido;
+    document.getElementById('fechaNacimiento').value = persona.fechaNacimiento;
+    document.getElementById('tipoPersona').value = persona.dni ? 'ciudadano' : 'extranjero';
+    document.getElementById('tipoPersona').disabled = true;
+
+    if (persona.dni) {
+        document.getElementById('dni').value = persona.dni;
+        document.getElementById('campoDNI').style.display = 'block';
+        document.getElementById('campoPaisOrigen').style.display = 'none';
+        document.getElementById('dni').disabled = true;
+    } else {
+        document.getElementById('paisOrigen').value = persona.paisOrigen;
+        document.getElementById('campoDNI').style.display = 'none';
+        document.getElementById('campoPaisOrigen').style.display = 'block';
+        document.getElementById('paisOrigen').disabled = true;
+    }
+
+    formularioABMForm.onsubmit = confirmarEliminarElemento;
+    document.querySelector('.listadoPersonas').style.display = 'none';
+    document.getElementById('formularioABM').style.display = 'block';
 }
 
-function cancelarAccion() {
-    ocultarFormularioABM();
-}
+async function confirmarEliminarElemento(event) {
+    event.preventDefault();
+    mostrarSpinner();
 
-function mostrarSpinner() {
-    document.getElementById('spinner-container').style.display = 'block';
-}
+    const id = document.getElementById('persona-id').innerText;
 
-function ocultarSpinner() {
-    document.getElementById('spinner-container').style.display = 'none';
-}
+    try {
+        const body = JSON.stringify({ id: parseInt(id, 10) });
+        console.log('Request body:', body);
 
-function mostrarFormularioYLista(lista) {
-    var tableBody = document.querySelector('#tablaPersonas tbody');
-    tableBody.innerHTML = '';
+        const response = await fetch('https://examenesutn.vercel.app/api/PersonaCiudadanoExtranjero', {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: body
+        });
 
-    lista.forEach(persona => {
-        var row = document.createElement('tr');
-        
-        row.innerHTML = `
-            <td>${persona.id}</td>
-            <td>${persona.nombre}</td>
-            <td>${persona.apellido}</td>
-            <td>${persona.fechaNacimiento}</td>
-            ${persona.dni ? `<td>${persona.dni}</td>` : `<td>-</td>`}
-            ${persona.paisOrigen ? `<td>${persona.paisOrigen}</td>` : `<td>-</td>`}
-            <td><button onclick="modificarPersona(${persona.id})">Modificar</button></td>
-            <td><button onclick="eliminarPersona(${persona.id})">Eliminar</button></td>
-        `;
-        
-        tableBody.appendChild(row);
-    });
+        if (response.status === 200) {
+            // Eliminar el elemento de la lista local
+            personas = personas.filter(p => p.id !== parseInt(id, 10));
+            mostrarFormularioYLista(personas);
+            ocultarSpinner();
+            ocultarFormularioABM();
+        } else {
+            const errorMessage = await response.text();
+            console.error(`Error ${response.status}: ${errorMessage}`);
+            ocultarSpinner();
+            alert("No se pudo realizar la operación.");
+        }
+    } catch (error) {
+        console.error(error);
+        ocultarSpinner();
+        alert(error.message);
+    }
 }
