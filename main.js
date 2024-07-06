@@ -39,7 +39,7 @@ function mostrarCamposSegunTipoPersona() {
 }
 
 function limpiarFormularioABM() {
-    document.getElementById('persona-id').innerText = ''; // Limpiar el campo de ID
+    document.getElementById('persona-id').innerText = ''; //limpiar
     document.getElementById('nombre').value = '';
     document.getElementById('apellido').value = '';
     document.getElementById('fechaNacimiento').value = '';
@@ -49,15 +49,15 @@ function limpiarFormularioABM() {
     document.getElementById('tipoPersona').disabled = false;
     document.getElementById('dni').disabled = false;
     document.getElementById('paisOrigen').disabled = false;
-    mostrarCamposSegunTipoPersona(); // Reset fields display based on type selection
+    mostrarCamposSegunTipoPersona(); 
 }
 
 function mostrarFormularioABM() {
     limpiarFormularioABM();
     document.querySelector('.listadoPersonas').style.display = 'none';
     document.getElementById('formularioABM').style.display = 'block';
-    document.getElementById('tituloFormulario').innerText = 'Agregar Persona'; // Por defecto, 'Agregar Persona'
-    document.getElementById('tipoPersona').disabled = false; // Habilitar por defecto
+    document.getElementById('tituloFormulario').innerText = 'Agregar Persona'; 
+    document.getElementById('tipoPersona').disabled = false; 
 }
 
 function ocultarFormularioABM() {
@@ -159,10 +159,10 @@ function modificarPersona(id) {
         return;
     }
 
-    limpiarFormularioABM(); // Limpiar los campos antes de mostrar el formulario
+    limpiarFormularioABM();
     document.getElementById('tituloFormulario').innerText = 'Modificar Persona';
     
-    // Cargar datos en el formulario
+    /*caraga formulario*/
     document.getElementById('nombre').value = persona.nombre;
     document.getElementById('apellido').value = persona.apellido;
     document.getElementById('fechaNacimiento').value = persona.fechaNacimiento;
@@ -249,6 +249,8 @@ async function actualizarElemento(event) {
         alert(error.message);
     }
 }
+
+
 /*ELIMINACION*/
 
 function eliminarPersona(id) {
@@ -303,7 +305,7 @@ async function confirmarEliminarElemento(event) {
         });
 
         if (response.status === 200) {
-            // Eliminar el elemento de la lista local
+            // borrar en local
             personas = personas.filter(p => p.id !== parseInt(id, 10));
             mostrarFormularioYLista(personas);
             ocultarSpinner();

@@ -43,5 +43,5 @@ function limpiarFormularioABM() {
     document.getElementById('dni').value = '';
     document.getElementById('paisOrigen').value = '';
     document.getElementById('tipoPersona').value = '';
-    mostrarCamposSegunTipoPersona(); // Reset fields display based on type selection
+    mostrarCamposSegunTipoPersona(); 
 }
